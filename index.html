@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GARDEN Idea Capture - NodePad 4b</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .quick-capture {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .quick-capture h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .capture-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-family: inherit;
+            resize: vertical;
+            background: white;
+        }
+
+        .capture-input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .capture-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-lightning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-lightning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn-organize {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-organize:hover {
+            background: #2980b9;
+        }
+
+        .btn-export {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #229954;
+        }
+
+        .ideas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .idea-category {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .idea-category h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .idea-item {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .idea-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .idea-item.priority-high {
+            border-left-color: #e74c3c;
+            background: #ffebee;
+        }
+
+        .idea-item.priority-medium {
+            border-left-color: #f39c12;
+            background: #fff8e1;
+        }
+
+        .idea-item.priority-low {
+            border-left-color: #27ae60;
+            background: #e8f5e8;
+        }
+
+        .idea-meta {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .timestamp {
+            font-size: 0.8em;
+            color: #95a5a6;
+        }
+
+        .search-filter {
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-filter input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .search-filter select {
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .stats {
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            margin: 5px;
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .ideas-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .capture-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 GARDEN Idea Capture</h1>
+            <div class="subtitle">NodePad 4b - Rapid Brain Dump & Organization</div>
+        </div>
+
+        <!-- Quick Capture -->
+        <div class="quick-capture">
+            <h2>⚡ Lightning Capture</h2>
+            <textarea id="quick-input" class="capture-input" 
+                placeholder="Dump your ideas here! No formatting needed - just brain dump everything. Hit Ctrl+Enter to quick save...
+
+Examples:
+- collaboration feature for multiple devs
+- recipe sharing between users  
+- unified backlog system
+- real-time artifact editing
+- GitHub integration without credential switching
+- conversation merging
+- enterprise permission system
+- mobile app for recipe cards
+- AI recipe generation from ingredients
+- shopping list optimization by store layout"></textarea>
+            
+            <div class="capture-buttons">
+                <button class="btn btn-lightning" onclick="quickSave()">⚡ Quick Save (Ctrl+Enter)</button>
+                <button class="btn btn-organize" onclick="organizeIdeas()">🗂️ Auto-Organize</button>
+                <button class="btn btn-export" onclick="exportIdeas()">📤 Export All</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="total-ideas">0</div>
+                <div class="stat-label">Total Ideas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="high-priority">0</div>
+                <div class="stat-label">High Priority</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="features">0</div>
+                <div class="stat-label">Features</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="bugs">0</div>
+                <div class="stat-label">Bugs/Issues</div>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="search-filter">
+            <input type="text" id="search-input" placeholder="Search ideas..." onkeyup="filterIdeas()">
+            <select id="category-filter" onchange="filterIdeas()">
+                <option value="">All Categories</option>
+                <option value="collaboration">Collaboration</option>
+                <option value="features">Features</option>
+                <option value="bugs">Bugs/Issues</option>
+                <option value="enhancement">Enhancement</option>
+                <option value="recipe">Recipe Features</option>
+                <option value="ui">UI/UX</option>
+                <option value="technical">Technical</option>
+                <option value="ideas">General Ideas</option>
+            </select>
+            <select id="priority-filter" onchange="filterIdeas()">
+                <option value="">All Priorities</option>
+                <option value="high">High Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="low">Low Priority</option>
+            </select>
+        </div>
+
+        <!-- Ideas Grid -->
+        <div class="ideas-grid" id="ideas-grid">
+            <!-- Ideas will be populated here -->
+        </div>
+    </div>
+
+    <script>
+        let ideas = JSON.parse(localStorage.getItem('garden-ideas') || '[]');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadIdeas();
+            updateStats();
+            
+            // Ctrl+Enter shortcut
+            document.getElementById('quick-input').addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    quickSave();
+                }
+            });
+        });
+
+        function quickSave() {
+            const input = document.getElementById('quick-input');
+            const text = input.value.trim();
+            
+            if (!text) {
+                alert('Please enter some ideas first!');
+                return;
+            }
+
+            // Split by lines and process each as separate idea
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+            const newIdeas = [];
+
+            lines.forEach(line => {
+                if (line.length > 10) { // Skip very short lines
+                    const idea = {
+                        id: Date.now() + Math.random(),
+                        text: line,
+                        category: categorizeIdea(line),
+                        priority: prioritizeIdea(line),
+                        timestamp: new Date().toISOString(),
+                        tags: extractTags(line)
+                    };
+                    newIdeas.push(idea);
+                }
+            });
+
+            ideas.push(...newIdeas);
+            localStorage.setItem('garden-ideas', JSON.stringify(ideas));
+            
+            // Clear input
+            input.value = '';
+            
+            // Refresh display
+            loadIdeas();
+            updateStats();
+            
+            // Show confirmation
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; 
+                background: #27ae60; color: white; 
+                padding: 15px 20px; border-radius: 10px; 
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000; font-weight: bold;
+            `;
+            notification.textContent = `💡 Saved ${newIdeas.length} ideas!`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function categorizeIdea(text) {
+            const lower = text.toLowerCase();
+            
+            if (lower.includes('collaborat') || lower.includes('multi-user') || lower.includes('sharing')) return 'collaboration';
+            if (lower.includes('recipe') || lower.includes('cooking') || lower.includes('ingredient')) return 'recipe';
+            if (lower.includes('bug') || lower.includes('error') || lower.includes('fix')) return 'bugs';
+            if (lower.includes('ui') || lower.includes('interface') || lower.includes('design')) return 'ui';
+            if (lower.includes('feature') || lower.includes('add') || lower.includes('new')) return 'features';
+            if (lower.includes('enhance') || lower.includes('improve') || lower.includes('better')) return 'enhancement';
+            if (lower.includes('github') || lower.includes('deploy') || lower.includes('server')) return 'technical';
+            
+            return 'ideas';
+        }
+
+        function prioritizeIdea(text) {
+            const lower = text.toLowerCase();
+            
+            if (lower.includes('critical') || lower.includes('blocker') || lower.includes('urgent') || lower.includes('p0')) return 'high';
+            if (lower.includes('important') || lower.includes('p1') || lower.includes('soon')) return 'medium';
+            if (lower.includes('nice') || lower.includes('future') || lower.includes('p2') || lower.includes('eventually')) return 'low';
+            
+            // Auto-prioritize based on content
+            if (lower.includes('recipe rolodex') || lower.includes('collaboration')) return 'high';
+            if (lower.includes('enhancement') || lower.includes('improvement')) return 'medium';
+            
+            return 'medium';
+        }
+
+        function extractTags(text) {
+            const tags = [];
+            const lower = text.toLowerCase();
+            
+            if (lower.includes('claude')) tags.push('claude');
+            if (lower.includes('github')) tags.push('github');
+            if (lower.includes('recipe')) tags.push('recipe');
+            if (lower.includes('nodepad')) tags.push('nodepad');
+            if (lower.includes('garden')) tags.push('garden');
+            if (lower.includes('mobile')) tags.push('mobile');
+            if (lower.includes('print')) tags.push('print');
+            if (lower.includes('ai')) tags.push('ai');
+            
+            return tags;
+        }
+
+        function loadIdeas() {
+            const grid = document.getElementById('ideas-grid');
+            
+            // Group ideas by category
+            const grouped = {};
+            ideas.forEach(idea => {
+                if (!grouped[idea.category]) {
+                    grouped[idea.category] = [];
+                }
+                grouped[idea.category].push(idea);
+            });
+
+            // Sort categories by priority
+            const categoryOrder = ['collaboration', 'features', 'recipe', 'bugs', 'enhancement', 'ui', 'technical', 'ideas'];
+            const sortedCategories = Object.keys(grouped).sort((a, b) => {
+                const aIndex = categoryOrder.indexOf(a);
+                const bIndex = categoryOrder.indexOf(b);
+                return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+            });
+
+            grid.innerHTML = sortedCategories.map(category => {
+                const categoryIdeas = grouped[category].sort((a, b) => {
+                    const priorityOrder = { high: 0, medium: 1, low: 2 };
+                    return priorityOrder[a.priority] - priorityOrder[b.priority];
+                });
+
+                const emoji = {
+                    collaboration: '🤝',
+                    features: '✨',
+                    recipe: '🍳',
+                    bugs: '🐛',
+                    enhancement: '⚡',
+                    ui: '🎨',
+                    technical: '⚙️',
+                    ideas: '💡'
+                };
+
+                return `
+                    <div class="idea-category" data-category="${category}">
+                        <h3>${emoji[category] || '💡'} ${category.charAt(0).toUpperCase() + category.slice(1)} (${categoryIdeas.length})</h3>
+                        ${categoryIdeas.map(idea => `
+                            <div class="idea-item priority-${idea.priority}" data-idea-id="${idea.id}">
+                                <div>${idea.text}</div>
+                                <div class="idea-meta">
+                                    Priority: ${idea.priority} | 
+                                    ${idea.tags.length > 0 ? 'Tags: ' + idea.tags.join(', ') + ' | ' : ''}
+                                    <span class="timestamp">${new Date(idea.timestamp).toLocaleString()}</span>
+                                    <button onclick="deleteIdea(${idea.id})" style="float: right; background: #e74c3c; color: white; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer;">×</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('total-ideas').textContent = ideas.length;
+            document.getElementById('high-priority').textContent = ideas.filter(i => i.priority === 'high').length;
+            document.getElementById('features').textContent = ideas.filter(i => i.category === 'features').length;
+            document.getElementById('bugs').textContent = ideas.filter(i => i.category === 'bugs').length;
+        }
+
+        function filterIdeas() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+            const priorityFilter = document.getElementById('priority-filter').value;
+
+            const categories = document.querySelectorAll('.idea-category');
+            
+            categories.forEach(category => {
+                const categoryName = category.dataset.category;
+                let categoryVisible = false;
+
+                if (categoryFilter && categoryName !== categoryFilter) {
+                    category.style.display = 'none';
+                    return;
+                }
+
+                const ideaItems = category.querySelectorAll('.idea-item');
+                ideaItems.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    const itemPriority = item.classList.contains('priority-high') ? 'high' : 
+                                       item.classList.contains('priority-medium') ? 'medium' : 'low';
+
+                    const matchesSearch = !searchTerm || text.includes(searchTerm);
+                    const matchesPriority = !priorityFilter || itemPriority === priorityFilter;
+
+                    if (matchesSearch && matchesPriority) {
+                        item.style.display = 'block';
+                        categoryVisible = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                category.style.display = categoryVisible ? 'block' : 'none';
+            });
+        }
+
+        function deleteIdea(id) {
+            if (confirm('Delete this idea?')) {
+                ideas = ideas.filter(idea => idea.id !== id);
+                localStorage.setItem('garden-ideas', JSON.stringify(ideas));
+                loadIdeas();
+                updateStats();
+            }
+        }
+
+        function organizeIdeas() {
+            // Re-categorize and prioritize all ideas
+            ideas.forEach(idea => {
+                idea.category = categorizeIdea(idea.text);
+                idea.priority = prioritizeIdea(idea.text);
+                idea.tags = extractTags(idea.text);
+            });
+            
+            localStorage.setItem('garden-ideas', JSON.stringify(ideas));
+            loadIdeas();
+            updateStats();
+            
+            alert('✅ Ideas reorganized and prioritized!');
+        }
+
+        function exportIdeas() {
+            const exportData = {
+                exported: new Date().toISOString(),
+                totalIdeas: ideas.length,
+                ideas: ideas,
+                summary: {
+                    byCategory: {},
+                    byPriority: { high: 0, medium: 0, low: 0 }
+                }
+            };
+
+            // Generate summary
+            ideas.forEach(idea => {
+                exportData.summary.byCategory[idea.category] = (exportData.summary.byCategory[idea.category] || 0) + 1;
+                exportData.summary.byPriority[idea.priority]++;
+            });
+
+            // Create markdown export
+            const markdown = `# GARDEN Ideas Export
+Generated: ${new Date().toLocaleString()}
+Total Ideas: ${ideas.length}
+
+## Summary
+${Object.entries(exportData.summary.byCategory).map(([cat, count]) => `- ${cat}: ${count}`).join('\n')}
+
+Priority Breakdown:
+- High: ${exportData.summary.byPriority.high}
+- Medium: ${exportData.summary.byPriority.medium}  
+- Low: ${exportData.summary.byPriority.low}
+
+## Ideas by Category
+
+${Object.entries(ideas.reduce((acc, idea) => {
+    if (!acc[idea.category]) acc[idea.category] = [];
+    acc[idea.category].push(idea);
+    return acc;
+}, {})).map(([category, categoryIdeas]) => `
+### ${category.toUpperCase()}
+
+${categoryIdeas.map(idea => `
+**[${idea.priority.toUpperCase()}]** ${idea.text}
+- Tags: ${idea.tags.join(', ') || 'none'}
+- Created: ${new Date(idea.timestamp).toLocaleString()}
+`).join('\n')}
+`).join('\n')}
+
+---
+*Exported from GARDEN Idea Capture NodePad*
+`;
+
+            // Download
+            const blob = new Blob([markdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `garden-ideas-${new Date().toISOString().split('T')[0]}.md`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
